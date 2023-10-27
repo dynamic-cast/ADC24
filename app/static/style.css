@@ -1,0 +1,39 @@
+html {
+  font-family: 'Lato', sans-serif;
+  font-size: 26px;
+}
+
+body {
+  max-width: 960px;
+  margin: 0 auto;
+  background: white;
+}
+
+h1 {}
+
+nav h1 {
+  flex: auto;
+  margin: 20px 0;
+}
+
+nav h1 a {
+  text-decoration: none;
+  padding: 0.25rem 0.5rem;
+}
+
+nav ul  {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+nav ul li a, nav ul li span, header .action {
+  display: block;
+  padding: 0.5rem;
+}
+
+.content {}
+.content > header {}
+.content > header h1 {}
+.flash {}
