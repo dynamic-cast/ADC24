@@ -1,15 +1,17 @@
 import numpy as np
 import time
+import torch
 
 from threading import Event, Thread
 
 from .audio_sample import EmptySampleException
 from .audio_utils import read_audio_sample
 from .player import Player
+from .rave import load_model
 
 class AudioEngine(Thread):
 
-    def __init__(self, input_wav, *a, **k):
+    def __init__(self, input_wav, model_path, *a, **k):
         super().__init__(*a, **k)
 
         sample = read_audio_sample(input_wav)
@@ -18,8 +20,7 @@ class AudioEngine(Thread):
         self._sample = sample
         self._data_type = sample.data_type
 
-        # self._buffer_size = int(sample.sampling_rate / 4)
-        self._buffer_size = 32
+        self._buffer_size = int(sample.sampling_rate / 4)
 
         self._player = Player(
             generate_data_callback=self._generate_next_buffer,
@@ -34,7 +35,20 @@ class AudioEngine(Thread):
 
         # self._zeros = np.zeros(self._buffer_size, dtype=self._data_type)
 
+        self._rave_model = load_model(model_path)
+        if sample.sampling_rate != self._rave_model.sampling_rate:
+            print(f"sampling rates differ")
+            # TODO: resample the input sample
+
         self.stop = Event()
+
+    def _apply_transformation(self, buffer):
+        torch.set_grad_enabled(False)
+        input_data = torch.Tensor(buffer)
+        input_data = torch.reshape(input_data, (1, 1, buffer.size))
+        encoded = self._rave_model.encode(input_data)
+        decoded = self._rave_model.decode(encoded)
+        return decoded[0][0][:buffer.size].numpy()
 
     def _generate_next_sample_buffer(self):
         # TODO: Add looping
@@ -53,6 +67,7 @@ class AudioEngine(Thread):
             dtype=float,
             count=self._buffer_size,
         )
+        sample_buffer = self._apply_transformation(sample_buffer)
         return sample_buffer.astype(self._data_type)
 
     def run(self):

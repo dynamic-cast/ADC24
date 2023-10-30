@@ -3,10 +3,9 @@ import os
 from flask import Flask, flash, g, render_template
 from app.audio import create_audio_engine
 
-
-def get_audio_engine(input_wav):
+def get_audio_engine(input_wav, model):
     if 'audio_engine' not in g:
-        g.audio_engine = create_audio_engine(input_wav)
+        g.audio_engine = create_audio_engine(input_wav, model)
 
     return g.audio_engine
 
@@ -26,7 +25,10 @@ def create_app(test_config=None):
 
     @app.route('/')
     def main():
-        audio_engine = get_audio_engine(app.config['INPUT_WAV'])
+        audio_engine = get_audio_engine(
+            app.config['INPUT_WAV'],
+            app.config['MODEL'],
+        )
         audio_engine.start()
 
         return render_template("main.html")
