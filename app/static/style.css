@@ -51,10 +51,6 @@ body {
   border-radius: 10px;
   background: #000;
   outline: none;
-  /*
-  -webkit-transition: .2s;
-  transition: opacity .2s;
-  */
 }
 
 .slider::-webkit-slider-thumb {
@@ -91,7 +87,7 @@ body {
 }
 
 .buttoncontainer input[type="checkbox"]:checked {
-  background: #f00;
+  background: #90EE90;
 }
 
 .button {
@@ -128,4 +124,11 @@ body {
 
 #grid .rect {
   background-color: #fff;
+  cursor: pointer;
+}
+
+#grid .rect.colored {
+  /* background-color: #57A0D2; */
+  /* background-color: #A7C7E7; */
+  cursor: pointer;
 }

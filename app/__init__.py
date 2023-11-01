@@ -55,6 +55,8 @@ def create_app(test_config=None):
     @app.route('/')
     def main():
         audio_engine.stop.set()
+        audio_engine.loop.clear()
+        audio_engine.transform.clear()
         return render_template("main.html")
 
     # BODGE!
@@ -69,10 +71,3 @@ def create_app(test_config=None):
     audio_engine.start()
 
     return app
-
-    # @app.teardown_appcontext
-    # def teardown_audio_engine(exception):
-    #     audio_engine = g.pop('audio_engine', None)
-
-    #     if audio_engine is not None:
-    #         audio_engine.stop.set()

@@ -56,23 +56,23 @@
     <div id="grid-box">
       <div id="grid">
         <div class="rect"></div>
+        <div class="rect colored"></div>
+        <div class="rect"></div>
+        <div class="rect colored"></div>
+        <div class="rect"></div>
+        <div class="rect colored"></div>
+        <div class="rect colored"></div>
+        <div class="rect"></div>
+        <div class="rect colored"></div>
+        <div class="rect"></div>
+        <div class="rect colored"></div>
         <div class="rect"></div>
         <div class="rect"></div>
+        <div class="rect colored"></div>
         <div class="rect"></div>
+        <div class="rect colored"></div>
         <div class="rect"></div>
-        <div class="rect"></div>
-        <div class="rect"></div>
-        <div class="rect"></div>
-        <div class="rect"></div>
-        <div class="rect"></div>
-        <div class="rect"></div>
-        <div class="rect"></div>
-        <div class="rect"></div>
-        <div class="rect"></div>
-        <div class="rect"></div>
-        <div class="rect"></div>
-        <div class="rect"></div>
-        <div class="rect"></div>
+        <div class="rect colored"></div>
       </div>
     </div>
 
@@ -126,5 +126,7 @@
     const checked = transform.checked ? "on" : "off";
     toggle_socket.send("transform, " + checked);
   });
+
+  const rect = document.querySelector(".rect");
 </script>
 {% endblock %}
