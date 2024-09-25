@@ -52,10 +52,15 @@ class AudioEngine(Thread):
 
         self._latent_coordinates = torch.zeros(self._rave_model.num_latent_dimensions)
         # self._latent_coordinates = latent_coordinates
+        self._rave_warmup()
 
         self.loop = Event()
         self.transform = Event()
         self.stop = NotifyingEvent(self._reset_engine_state)
+
+    def _rave_warmup(self):
+        for _ in range(4):
+            self._apply_transformation(self._sample.data[:self._buffer_size])
 
     def _reset_engine_state(self):
         self._current_position = 0
