@@ -77,6 +77,14 @@
     </div>
 
   </div>
+  <div id="xy">
+    <div class="bottom-row">
+      <div class="buttoncontainer">
+        <input type="checkbox" id="gathering" class="button"/><!-- <label for="playing">Playing</label>-->
+        <i class="fa fa-plus"></i>
+      </div>
+    </div>
+  </div>
 
 </div>
 {% endblock %}
@@ -111,6 +119,7 @@
   const playing = document.querySelector("#playing");
   const looping = document.querySelector("#looping");
   const transforming = document.querySelector("#transforming");
+  const gathering = document.querySelector("#gathering");
 
   playing.addEventListener("input", (event) => {
     const checked = playing.checked ? "on" : "off";
@@ -125,6 +134,17 @@
   transforming.addEventListener("input", (event) => {
     const checked = transforming.checked ? "on" : "off";
     toggle_socket.send("transforming, " + checked);
+  });
+
+  gathering.addEventListener("input", (event) => {
+    const checked = gathering.checked ? "on" : "off";
+    toggle_socket.send("gathering, " + checked);
+  });
+
+  const add_points_socket = new WebSocket('ws://' + location.host + '/add_point');
+  const xy = document.querySelector("#xy");
+  xy.addEventListener("click", (event) => {
+    add_points_socket.send([event.clientX, event.clientY]);
   });
 
   const rect = document.querySelector(".rect");

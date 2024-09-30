@@ -13,8 +13,8 @@ body {
 }
 
 #contents {
-  max-width: 50%;
   margin: auto;
+  max-width: fit-content;
 }
 
 #controller {
@@ -23,6 +23,18 @@ body {
   border-radius: 10%;
   border: 18px solid #000;
   background: #fff;
+  float: left;
+  margin: 0 50px;
+}
+
+#xy {
+  width: 600px;
+  height: 600px;
+  border-radius: 10%;
+  border: 18px solid #000;
+  background: #fff;
+  display: inline-block;
+  position: relative;
 }
 
 #controls {
@@ -86,6 +98,15 @@ body {
   align-items: center;
 }
 
+.bottom-row {
+  position: absolute;
+  bottom: 0;
+}
+
+.bottom-row .buttoncontainer {
+  display: grid;
+}
+
 .buttoncontainer input[type="checkbox"]:checked {
   background: #90EE90;
 }
@@ -103,6 +124,11 @@ body {
 
 .buttoncontainer i.fa {
   margin-left: 10px;
+}
+
+.bottom-row .buttoncontainer i.fa {
+  text-align: center;
+  margin-left: 0px;
 }
 
 #grid-box {

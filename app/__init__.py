@@ -6,6 +6,7 @@ from queue import Queue
 
 sock = Sock()
 from app.audio import create_audio_engine
+from app.control.xy import XYControl
 
 def get_audio_engine(input_wav, model):
     if 'audio_engine' not in g:
@@ -37,6 +38,15 @@ def toggle_switches(ws):
             toggle(current_app.audio_engine.loop, val)
         elif name == "transforming":
             toggle(current_app.audio_engine.transform, val)
+        elif name == "gathering":
+            current_app.xy_control.toggle_data_gathering(val)
+
+@sock.route('/add_point')
+def add_point(ws):
+    while True:
+        data = ws.receive()
+        coordinates = [int(val) for val in data.split(",")]
+        current_app.xy_control.add_point(coordinates)
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
@@ -69,5 +79,7 @@ def create_app(test_config=None):
     audio_engine.stop.set()
     app.audio_engine = audio_engine
     audio_engine.start()
+
+    app.xy_control = XYControl()
 
     return app
