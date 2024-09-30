@@ -45,7 +45,7 @@
         </div>
 
         <div class="buttoncontainer">
-          <input type="checkbox" id="transform" class="button"/><!--<label for="transform">Style Transfer</label>-->
+          <input type="checkbox" id="transforming" class="button"/><!--<label for="transform">Style Transfer</label>-->
           <i class="fa fa-exchange"></i>
         </div>
 
@@ -110,7 +110,7 @@
 
   const playing = document.querySelector("#playing");
   const looping = document.querySelector("#looping");
-  const transform = document.querySelector("#transform");
+  const transforming = document.querySelector("#transforming");
 
   playing.addEventListener("input", (event) => {
     const checked = playing.checked ? "on" : "off";
@@ -122,9 +122,9 @@
     toggle_socket.send("looping, " + checked);
   });
 
-  transform.addEventListener("input", (event) => {
-    const checked = transform.checked ? "on" : "off";
-    toggle_socket.send("transform, " + checked);
+  transforming.addEventListener("input", (event) => {
+    const checked = transforming.checked ? "on" : "off";
+    toggle_socket.send("transforming, " + checked);
   });
 
   const rect = document.querySelector(".rect");

@@ -35,7 +35,7 @@ def toggle_switches(ws):
             toggle(current_app.audio_engine.stop, "on" if val == "off" else "off")
         elif name == "looping":
             toggle(current_app.audio_engine.loop, val)
-        elif name == "transform":
+        elif name == "transforming":
             toggle(current_app.audio_engine.transform, val)
 
 def create_app(test_config=None):
