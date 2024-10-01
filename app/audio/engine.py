@@ -107,6 +107,11 @@ class AudioEngine(Thread):
             sample_buffer = self._apply_transformation(sample_buffer)
         return sample_buffer.astype(self._data_type)
 
+    @property
+    def latent_coordinates(self):
+        return self._latent_coordinates
+
+    # TODO: make thread safe (use Python Queue?)
     def set_latent_coordinates(self, coordinates):
         num_dimensions = len(self._latent_coordinates)
         num_coordinates = len(coordinates)

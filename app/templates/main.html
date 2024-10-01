@@ -78,11 +78,19 @@
 
   </div>
   <div id="xy">
-    <div class="bottom-row">
-      <div class="buttoncontainer">
-        <input type="checkbox" id="gathering" class="button"/><!-- <label for="playing">Playing</label>-->
-        <i class="fa fa-plus"></i>
-      </div>
+  </div>
+  <div class="bottom-row">
+    <div class="buttoncontainer">
+      <input type="checkbox" id="gathering" class="button"/>
+      <i class="fa fa-plus"></i>
+    </div>
+    <div class="buttoncontainer">
+      <input type="checkbox" id="training" class="button"/>
+      <i class="fa fa-train"></i>
+    </div>
+    <div class="buttoncontainer">
+      <input type="checkbox" id="controlling" class="button"/>
+      <i class="fa fa-gamepad"></i>
     </div>
   </div>
 
@@ -114,12 +122,24 @@
     dims_socket.send([dim1.value, dim2.value, dim3.value, event.target.value]);
   });
 
+  const set_dims_socket = new WebSocket('ws://' + location.host + '/set_dims');
+  set_dims_socket.addEventListener("message", (event) => {
+    console.log("received the dims: " + event.data);
+    var values = event.data.split(",").map(parseFloat);
+    dim1.value = values[0];
+    dim2.value = values[1];
+    dim3.value = values[2];
+    dim4.value = values[3];
+  });
+
   const toggle_socket = new WebSocket('ws://' + location.host + '/toggle');
 
   const playing = document.querySelector("#playing");
   const looping = document.querySelector("#looping");
   const transforming = document.querySelector("#transforming");
   const gathering = document.querySelector("#gathering");
+  const training = document.querySelector("#training");
+  const controlling = document.querySelector("#controlling");
 
   playing.addEventListener("input", (event) => {
     const checked = playing.checked ? "on" : "off";
@@ -141,12 +161,20 @@
     toggle_socket.send("gathering, " + checked);
   });
 
-  const add_points_socket = new WebSocket('ws://' + location.host + '/add_point');
-  const xy = document.querySelector("#xy");
-  xy.addEventListener("click", (event) => {
-    add_points_socket.send([event.clientX, event.clientY]);
+  training.addEventListener("input", (event) => {
+    const checked = training.checked ? "on" : "off";
+    toggle_socket.send("training, " + checked);
   });
 
-  const rect = document.querySelector(".rect");
+  controlling.addEventListener("input", (event) => {
+    const checked = controlling.checked ? "on" : "off";
+    toggle_socket.send("controlling, " + checked);
+  });
+
+  const pass_coordinates_socket = new WebSocket('ws://' + location.host + '/pass_coordinates');
+  const xy = document.querySelector("#xy");
+  xy.addEventListener("click", (event) => {
+    pass_coordinates_socket.send([event.clientX, event.clientY, dim1.value, dim2.value, dim3.value, dim4.value]);
+  });
 </script>
 {% endblock %}

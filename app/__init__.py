@@ -27,6 +27,15 @@ def latent_dimensions(ws):
         coordinates = [float(val) for val in data.split(",")]
         current_app.audio_engine.set_latent_coordinates(coordinates)
 
+@sock.route('/set_dims')
+def set_latent_dimensions(ws):
+    while True:
+        # TODO: optimise, refactor
+        if current_app.xy_control.new_dimensions_ready:
+            data = ",".join(map(str, current_app.audio_engine.latent_coordinates.numpy()))
+            ws.send(data)
+            current_app.xy_control.new_dimensions_ready = False
+
 @sock.route('/toggle')
 def toggle_switches(ws):
     while True:
@@ -40,13 +49,19 @@ def toggle_switches(ws):
             toggle(current_app.audio_engine.transform, val)
         elif name == "gathering":
             current_app.xy_control.toggle_data_gathering(val)
+        elif name == "training":
+            current_app.xy_control.toggle_training(val)
+        elif name == "controlling":
+            current_app.xy_control.toggle_control(val)
 
-@sock.route('/add_point')
-def add_point(ws):
+@sock.route('/pass_coordinates')
+def pass_coordinates(ws):
     while True:
         data = ws.receive()
-        coordinates = [int(val) for val in data.split(",")]
-        current_app.xy_control.add_point(coordinates)
+        values = [float(val) for val in data.split(",")]
+        mouse_xy = values[:2]
+        latent_coordinates = values[2:]
+        current_app.xy_control.receive_coordinates(mouse_xy, latent_coordinates)
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
@@ -80,6 +95,6 @@ def create_app(test_config=None):
     app.audio_engine = audio_engine
     audio_engine.start()
 
-    app.xy_control = XYControl()
+    app.xy_control = XYControl(app.audio_engine.set_latent_coordinates)
 
     return app

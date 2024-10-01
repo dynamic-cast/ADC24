@@ -28,8 +28,8 @@ body {
 }
 
 #xy {
-  width: 600px;
-  height: 600px;
+  width: 500px;
+  height: 500px;
   border-radius: 10%;
   border: 18px solid #000;
   background: #fff;
@@ -98,13 +98,10 @@ body {
   align-items: center;
 }
 
-.bottom-row {
-  position: absolute;
-  bottom: 0;
-}
-
 .bottom-row .buttoncontainer {
   display: grid;
+  max-width: fit-content;
+  float: left;
 }
 
 .buttoncontainer input[type="checkbox"]:checked {
