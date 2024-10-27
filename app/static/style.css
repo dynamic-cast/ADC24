@@ -27,7 +27,7 @@ body {
   margin: 0 50px;
 }
 
-#xy {
+.xy {
   width: 500px;
   height: 500px;
   border-radius: 10%;
@@ -35,6 +35,10 @@ body {
   background: #fff;
   display: inline-block;
   position: relative;
+}
+
+.xy.inactive {
+  display: none;
 }
 
 #controls {
@@ -98,10 +102,27 @@ body {
   align-items: center;
 }
 
-.bottom-row .buttoncontainer {
+#console {
+  width: 249px;
+  height: 55px;
+  padding: 10px;
+  background-color: #000;
+  margin-left: 4px;
+  color: #fff;
+  /* font-family: 'Cutive Mono', serif; */
+  font-family: "Lucida Console", "Courier New", monospace;
+  font-size: 14px;
+  text-transform: lowercase;
+}
+
+.bottom-row .buttoncontainer,
+.bottom-row #console {
   display: grid;
-  max-width: fit-content;
   float: left;
+}
+
+.bottom-row .buttoncontainer {
+  max-width: fit-content;
 }
 
 .buttoncontainer input[type="checkbox"]:checked {

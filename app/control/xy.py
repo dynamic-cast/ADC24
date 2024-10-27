@@ -1,6 +1,7 @@
 from sklearn.model_selection import train_test_split
 
 import copy
+import logging
 import numpy as np
 import torch
 import torch.nn as nn
@@ -61,25 +62,25 @@ class TrainingData:
     def training_outputs(self):
         return self._training_outputs
 
+    @property
+    def empty(self):
+        return len(self._training_inputs) == 0
+
 class XYControl:
-    def __init__(self, set_controls_callback, *a, **kw):
+    def __init__(self, set_controls_callback, send_msg_callback, *a, **kw):
         super().__init__(*a, **kw)
 
         self._set_controls_callback = set_controls_callback
+        self._send_msg_callback = send_msg_callback
         self._mode = Mode.none
         self._training_data = TrainingData()
         self._model_weights = None
         self._model = Model()
+        self._model_trained = False
 
-        self._new_dimensions_ready = False
-
-    @property
-    def new_dimensions_ready(self):
-        return self._new_dimensions_ready
-
-    @new_dimensions_ready.setter
-    def new_dimensions_ready(self, ready):
-        self._new_dimensions_ready = ready
+    def log(self, message):
+        # logger.info(message)
+        self._send_msg_callback("log", message)
 
     def set_mode(self, mode):
         self._mode = mode
@@ -88,17 +89,17 @@ class XYControl:
 
     def receive_coordinates(self, mouse_xy, latent_coordinates):
         if self._mode == Mode.data_gathering:
-            print(f"Adding data: {mouse_xy}, {latent_coordinates}")
+            self.log(f"Adding data point: {mouse_xy} -> {latent_coordinates}")
             self._training_data.add_data_point(mouse_xy, latent_coordinates)
-        if self._mode == Mode.control:
-            print(f"Passing data: {mouse_xy}, {latent_coordinates}")
+        if self._mode == Mode.control and self._model_trained:
+            self.log(f"Passing data: {mouse_xy} -> {latent_coordinates}")
             self.generate_latent_coordinates(mouse_xy, latent_coordinates)
 
     def _toggle_mode(self, active_mode, value):
-        if value == "on":
-            self.set_mode(active_mode)
-        elif value == "off":
-            self.set_mode(Mode.none)
+         if value == "on":
+             self.set_mode(active_mode)
+         elif value == "off" and self._mode == active_mode:
+             self.set_mode(Mode.none)
 
     def toggle_data_gathering(self, value):
         self._toggle_mode(Mode.data_gathering, value)
@@ -106,16 +107,21 @@ class XYControl:
     def toggle_training(self, value):
         self._toggle_mode(Mode.training, value)
         if value == "on":
+            if self._training_data.empty:
+                self.log("No training data")
+                return
             self.train()
 
     def toggle_control(self, value):
-        print(f"toggle control, {value}")
         self._toggle_mode(Mode.control, value)
         if value == "on":
-            self.prepare_control()
+            if self._model_trained:
+                self.prepare_control()
+            else:
+                self.log("Model not trained yet")
 
     def train(self):
-        print("Training started")
+        self.log("Training started")
         X_train, X_test, y_train, y_test = train_test_split(
             self._training_data.training_inputs,
             self._training_data.training_outputs,
@@ -170,13 +176,13 @@ class XYControl:
             if mse < best_mse:
                 best_mse = mse
                 self._model_weights = copy.deepcopy(self._model.state_dict())
-            print(f"Epoch [{epoch+1}/{n_epochs}], " +
+            self.log(f"Epoch [{epoch+1}/{n_epochs}], " +
                   f"Loss: {running_loss/len_data:.4f}")
 
-        print("Training finished")
+        self.log("Training finished")
+        self._model_trained = True
 
     def prepare_control(self):
-        print(f"prepare control")
         self._model.load_state_dict(self._model_weights)
         self._model.eval()
 
@@ -184,7 +190,5 @@ class XYControl:
         with torch.no_grad():
             x = torch.tensor(mouse_xy, dtype=torch.float32)
             y_pred = self._model(x)
-            print(f"current coordinates: {latent_coordinates}")
-            print(f"new coordinates: {y_pred}")
             self._set_controls_callback(y_pred)
-            self._new_dimensions_ready = True
+            self._send_msg_callback("set_dims", {"dims": [float(v) for v in y_pred]})

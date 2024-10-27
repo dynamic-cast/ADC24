@@ -1,180 +1,115 @@
-{% extends 'base.html' %}
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Style Transfer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='font-awesome/css/font-awesome.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+            integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+            crossorigin="anonymous">
+    </script>
+    <script type="text/javascript" src={{ url_for('static', filename='script.js') }}></script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Cutive+Mono&display=swap&family=Audiowide');
+    </style>
 
-{% block header %}
-{% endblock %}
+  </head>
+  <body>
+    <p class="title">Style Transfer</p>
+    <div id="contents">
 
-{% block content %}
-<p class="title">Style Transfer</p>
-<div id="contents">
+      <div id="controller">
 
-  <div id="controller">
+        <div id="controls">
 
-    <div id="controls">
+          <div id="sliders-box">
+          <div id="sliders">
 
-      <div id="sliders-box">
-      <div id="sliders">
+            <div class="slidecontainer">
+              <input type="range" id="dim1" name="dim1" class="slider" min="-5" max="5" step="0.05" />
+            </div>
 
-        <div class="slidecontainer">
-          <input type="range" id="dim1" name="dim1" class="slider" min="-5" max="5" step="0.05" />
+            <div class="slidecontainer">
+              <input type="range" id="dim2" name="dim2" class="slider" min="-5" max="5" step="0.05"/>
+            </div>
+
+            <div class="slidecontainer">
+              <input type="range" id="dim3" name="dim3" class="slider" min="-5" max="5" step="0.05"/>
+            </div>
+
+            <div class="slidecontainer">
+              <input type="range" id="dim4" name="dim4" class="slider" min="-5" max="5" step="0.05"/>
+            </div>
+
+          </div>
+          </div>
+
+          <div id="buttons">
+            <div class="buttoncontainer">
+              <input type="checkbox" id="playing" class="button"/><!-- <label for="playing">Playing</label>-->
+              <i class="fa fa-play"></i>
+            </div>
+
+            <div class="buttoncontainer">
+              <input type="checkbox" id="looping" class="button"/><!--<label for="looping">Looping</label>-->
+              <i class="fa fa-repeat"></i>
+            </div>
+
+            <div class="buttoncontainer">
+              <input type="checkbox" id="transforming" class="button"/><!--<label for="transform">Style Transfer</label>-->
+              <i class="fa fa-exchange"></i>
+            </div>
+
+          </div>
+
         </div>
 
-        <div class="slidecontainer">
-          <input type="range" id="dim2" name="dim2" class="slider" min="-5" max="5" step="0.05"/>
-        </div>
-
-        <div class="slidecontainer">
-          <input type="range" id="dim3" name="dim3" class="slider" min="-5" max="5" step="0.05"/>
-        </div>
-
-        <div class="slidecontainer">
-          <input type="range" id="dim4" name="dim4" class="slider" min="-5" max="5" step="0.05"/>
+        <div id="grid-box">
+          <div id="grid">
+            <div class="rect"></div>
+            <div class="rect colored"></div>
+            <div class="rect"></div>
+            <div class="rect colored"></div>
+            <div class="rect"></div>
+            <div class="rect colored"></div>
+            <div class="rect colored"></div>
+            <div class="rect"></div>
+            <div class="rect colored"></div>
+            <div class="rect"></div>
+            <div class="rect colored"></div>
+            <div class="rect"></div>
+            <div class="rect"></div>
+            <div class="rect colored"></div>
+            <div class="rect"></div>
+            <div class="rect colored"></div>
+            <div class="rect"></div>
+            <div class="rect colored"></div>
+          </div>
         </div>
 
       </div>
-      </div>
-
-      <div id="buttons">
+      <div id="xy-gathering" class="xy"></div>
+      <div id="xy-control" class="xy inactive"></div>
+      <div class="bottom-row">
         <div class="buttoncontainer">
-          <input type="checkbox" id="playing" class="button"/><!-- <label for="playing">Playing</label>-->
-          <i class="fa fa-play"></i>
+          <input type="checkbox" id="gathering" class="button"/>
+          <i class="fa fa-plus"></i>
         </div>
-
         <div class="buttoncontainer">
-          <input type="checkbox" id="looping" class="button"/><!--<label for="looping">Looping</label>-->
-          <i class="fa fa-repeat"></i>
+          <input type="checkbox" id="training" class="button"/>
+          <i class="fa fa-train"></i>
         </div>
-
         <div class="buttoncontainer">
-          <input type="checkbox" id="transforming" class="button"/><!--<label for="transform">Style Transfer</label>-->
-          <i class="fa fa-exchange"></i>
+          <input type="checkbox" id="controlling" class="button"/>
+          <i class="fa fa-gamepad"></i>
         </div>
-
-      </div>
-
-    </div>
-
-    <div id="grid-box">
-      <div id="grid">
-        <div class="rect"></div>
-        <div class="rect colored"></div>
-        <div class="rect"></div>
-        <div class="rect colored"></div>
-        <div class="rect"></div>
-        <div class="rect colored"></div>
-        <div class="rect colored"></div>
-        <div class="rect"></div>
-        <div class="rect colored"></div>
-        <div class="rect"></div>
-        <div class="rect colored"></div>
-        <div class="rect"></div>
-        <div class="rect"></div>
-        <div class="rect colored"></div>
-        <div class="rect"></div>
-        <div class="rect colored"></div>
-        <div class="rect"></div>
-        <div class="rect colored"></div>
+        <div id="console">
+          <div id="status">panel status: off</div>
+          <div id="log"></div>
+        </div>
       </div>
     </div>
-
-  </div>
-  <div id="xy">
-  </div>
-  <div class="bottom-row">
-    <div class="buttoncontainer">
-      <input type="checkbox" id="gathering" class="button"/>
-      <i class="fa fa-plus"></i>
-    </div>
-    <div class="buttoncontainer">
-      <input type="checkbox" id="training" class="button"/>
-      <i class="fa fa-train"></i>
-    </div>
-    <div class="buttoncontainer">
-      <input type="checkbox" id="controlling" class="button"/>
-      <i class="fa fa-gamepad"></i>
-    </div>
-  </div>
-
-</div>
-{% endblock %}
-
-{% block bottom %}
-<script>
-  const dims_socket = new WebSocket('ws://' + location.host + '/dims');
-
-  const dim1 = document.querySelector("#dim1");
-  const dim2 = document.querySelector("#dim2");
-  const dim3 = document.querySelector("#dim3");
-  const dim4 = document.querySelector("#dim4");
-
-  dim1.addEventListener("input", (event) => {
-    dims_socket.send([event.target.value, dim2.value, dim3.value, dim4.value]);
-  });
-
-  dim2.addEventListener("input", (event) => {
-    dims_socket.send([dim1.value, event.target.value, dim3.value, dim4.value]);
-  });
-
-  dim3.addEventListener("input", (event) => {
-    dims_socket.send([dim1.value, dim2.value, event.target.value, dim4.value]);
-  });
-
-  dim4.addEventListener("input", (event) => {
-    dims_socket.send([dim1.value, dim2.value, dim3.value, event.target.value]);
-  });
-
-  const set_dims_socket = new WebSocket('ws://' + location.host + '/set_dims');
-  set_dims_socket.addEventListener("message", (event) => {
-    console.log("received the dims: " + event.data);
-    var values = event.data.split(",").map(parseFloat);
-    dim1.value = values[0];
-    dim2.value = values[1];
-    dim3.value = values[2];
-    dim4.value = values[3];
-  });
-
-  const toggle_socket = new WebSocket('ws://' + location.host + '/toggle');
-
-  const playing = document.querySelector("#playing");
-  const looping = document.querySelector("#looping");
-  const transforming = document.querySelector("#transforming");
-  const gathering = document.querySelector("#gathering");
-  const training = document.querySelector("#training");
-  const controlling = document.querySelector("#controlling");
-
-  playing.addEventListener("input", (event) => {
-    const checked = playing.checked ? "on" : "off";
-    toggle_socket.send("playing, " + checked);
-  });
-
-  looping.addEventListener("input", (event) => {
-    const checked = looping.checked ? "on" : "off";
-    toggle_socket.send("looping, " + checked);
-  });
-
-  transforming.addEventListener("input", (event) => {
-    const checked = transforming.checked ? "on" : "off";
-    toggle_socket.send("transforming, " + checked);
-  });
-
-  gathering.addEventListener("input", (event) => {
-    const checked = gathering.checked ? "on" : "off";
-    toggle_socket.send("gathering, " + checked);
-  });
-
-  training.addEventListener("input", (event) => {
-    const checked = training.checked ? "on" : "off";
-    toggle_socket.send("training, " + checked);
-  });
-
-  controlling.addEventListener("input", (event) => {
-    const checked = controlling.checked ? "on" : "off";
-    toggle_socket.send("controlling, " + checked);
-  });
-
-  const pass_coordinates_socket = new WebSocket('ws://' + location.host + '/pass_coordinates');
-  const xy = document.querySelector("#xy");
-  xy.addEventListener("click", (event) => {
-    pass_coordinates_socket.send([event.clientX, event.clientY, dim1.value, dim2.value, dim3.value, dim4.value]);
-  });
-</script>
-{% endblock %}
+  </body>
+</html>
