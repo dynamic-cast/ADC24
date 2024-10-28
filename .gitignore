@@ -1,2 +1,7 @@
 *.pyc
 __pycache__/
+darbouka_onnx.ts
+venv/
+workshopenv/
+.idea/
+.ipynb_checkpoints/
