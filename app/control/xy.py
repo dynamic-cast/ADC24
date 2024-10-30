@@ -1,11 +1,9 @@
 from sklearn.model_selection import train_test_split
 
 import copy
-import logging
 import numpy as np
 import torch
 import torch.nn as nn
-import tqdm
 
 class Model(nn.Module):
     def __init__(self, *a, **kw):
@@ -16,6 +14,7 @@ class Model(nn.Module):
             nn.ReLU(),
             nn.Linear(32, 4),
         )
+        # TODO: Test this? Or Delete?
         # pyramid
         # self.layers = nn.Sequential(
         #     nn.Linear(2, 32),
@@ -151,6 +150,8 @@ class XYControl:
         self.log("Training finished")
         self._model_trained = True
 
+    # TODO: Place in audio_utils.py
+    # TODO: Can we replace train_test_split (Would remove scikit-learn dep)?
     def _prepare_data(self):
         X_train, X_test, y_train, y_test = train_test_split(
             self._training_data.training_inputs,
