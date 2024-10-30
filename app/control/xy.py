@@ -122,66 +122,86 @@ class XYControl:
 
     def train(self):
         self.log("Training started")
-        X_train, X_test, y_train, y_test = train_test_split(
-            self._training_data.training_inputs,
-            self._training_data.training_outputs,
-            train_size=0.8,
-            shuffle=True)
-        len_data = len(X_train)
-
-        X_train = torch.tensor(X_train, dtype=torch.float32)
-        X_test = torch.tensor(X_test, dtype=torch.float32)
-        y_train = torch.tensor(y_train, dtype=torch.float32)
-        y_test = torch.tensor(y_test, dtype=torch.float32)
-
-        self._model = Model()
-        loss_fn = nn.MSELoss()
-        optimiser = torch.optim.Adam(self._model.parameters(), lr=0.0001)
-
-        n_epochs = 100
-        batch_size = 5
-        batch_start = torch.arange(0, len(X_train), batch_size)
-
+        
+        # Prepare data
+        X_train, X_test, y_train, y_test = self._prepare_data()
+        
+        # Initialize model, loss function, and optimizer
+        self._initialize_training_components()
+        
         # Hold the best model
         best_mse = np.inf # init to infinity
         history = []
 
-        for epoch in range(n_epochs):
-            running_loss = 0.0
-            self._model.train()
-            with tqdm.tqdm(batch_start, unit="batch", mininterval=0, disable=True) as bar:
-                bar.set_description(f"Epoch {epoch}")
-                for start in bar:
-                    # take a batch
-                    X_batch = X_train[start:start+batch_size]
-                    y_batch = y_train[start:start+batch_size]
-                    # forward pass
-                    y_pred = self._model(X_batch)
-                    loss = loss_fn(y_pred, y_batch)
-                    # backward pass
-                    optimiser.zero_grad()
-                    loss.backward()
-                    # update weights
-                    optimiser.step()
-                    # print progress
-                    bar.set_postfix(mse=float(loss))
-                    running_loss += loss.item()
-
+        # Training loop
+        for epoch in range(self.n_epochs): # n_epochs = 100
+            running_loss = self._train_one_epoch(X_train, y_train)
+            
             # evaluate accuracy at end of each epoch
-            self._model.eval()
-            y_pred = self._model(X_test)
-            mse = loss_fn(y_pred, y_test)
-            mse = float(mse)
+            mse = self._validate(X_test, y_test)
             history.append(mse)
+            
+            # Save best model if improved
             if mse < best_mse:
                 best_mse = mse
                 self._model_weights = copy.deepcopy(self._model.state_dict())
-            self.log(f"Epoch [{epoch+1}/{n_epochs}], " +
-                  f"Loss: {running_loss/len_data:.4f}")
+
+            self.log(f"Epoch [{epoch+1}/{self.n_epochs}], Loss: {running_loss:.4f}, MSE: {mse:.4f}")
 
         self.log("Training finished")
         self._model_trained = True
 
+    def _prepare_data(self):
+        X_train, X_test, y_train, y_test = train_test_split(
+            self._training_data.training_inputs,
+            self._training_data.training_outputs,
+            train_size=0.8,
+            shuffle=True
+        )
+        # Convert to PyTorch tensors
+        return (
+            torch.tensor(X_train, dtype=torch.float32),
+            torch.tensor(X_test, dtype=torch.float32),
+            torch.tensor(y_train, dtype=torch.float32),
+            torch.tensor(y_test, dtype=torch.float32)
+        )
+    
+    def _initialize_training_components(self):
+        self._model = Model()
+        self.loss_fn = nn.MSELoss()
+        self.optimiser = torch.optim.Adam(self._model.parameters(), lr=0.0001)
+        self.n_epochs = 100
+        self.batch_size = 5
+
+    def _train_one_epoch(self, X_train, y_train):
+        running_loss = 0.0
+        batch_start = torch.arange(0, len(X_train), self.batch_size)
+        self._model.train()
+
+        for start in batch_start:
+            X_batch = X_train[start:start+self.batch_size]
+            y_batch = y_train[start:start+self.batch_size]
+
+            # Forward pass
+            y_pred = self._model(X_batch)
+            loss = self.loss_fn(y_pred, y_batch)
+            
+            # Backward pass and optimization
+            self.optimiser.zero_grad()
+            loss.backward()
+            self.optimiser.step()
+
+            running_loss += loss.item()
+        
+        return running_loss / len(batch_start)  # Average loss per batch
+    
+    def _validate(self, X_test, y_test):
+        self._model.eval()
+        with torch.no_grad():
+            y_pred = self._model(X_test)
+            mse = self.loss_fn(y_pred, y_test).item()
+        return mse
+    
     def prepare_control(self):
         self._model.load_state_dict(self._model_weights)
         self._model.eval()
