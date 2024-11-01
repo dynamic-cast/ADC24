@@ -2,6 +2,7 @@ import copy
 import numpy as np
 import torch
 import torch.nn as nn
+import json
 
 class Model(nn.Module):
     def __init__(self, *a, **kw):
@@ -94,7 +95,9 @@ class XYControl:
         self._toggle_mode(Mode.training, value)
         if value == "on":
             if self._training_data.empty:
-                self.log("No training data")
+                self.load_data()  # Load from file before training
+            if self._training_data.empty:
+                self.log("No training data available")
                 return
             self.train()
 
@@ -136,6 +139,23 @@ class XYControl:
 
         self.log("Training finished")
         self._model_trained = True
+
+    def load_data(self, file_path="training_data.json"):
+        """
+        Load data from a file and populate training data.
+        """
+        with open(file_path, "r") as f:
+            data = json.load(f)
+
+        # Clear current training data
+        self._training_data.reset()
+
+        for point in data:
+            mouse_xy = point["mouse_xy"]
+            latent_coordinates = point["latent_coordinates"]
+            self._training_data.add_data_point(mouse_xy, latent_coordinates)
+
+        self.log("Training data loaded from file")
 
     def _prepare_data(self):
         X = torch.tensor(self._training_data.training_inputs, dtype=torch.float32)
