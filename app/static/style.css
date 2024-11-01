@@ -1,10 +1,15 @@
 html {
-  font-family: 'Lato', sans-serif;
-  font-size: 26px;
+  font-family: 'Audiowide', sans-serif;
 }
 
 body {
   background: white;
+}
+
+.title {
+  margin-left: 40px;
+  font-size: 40px;
+  text-transform: uppercase;
 }
 
 #contents {
@@ -13,20 +18,30 @@ body {
 }
 
 #controller {
-  margin: auto;
   width: 600px;
   height: 600px;
+  border-radius: 10%;
+  border: 18px solid #000;
+  background: #fff;
+}
+
+#controls {
+  padding-top: 140px;
+}
+
+#sliders-box {
+  float: left;
+  width: 74%;
+  margin-left: -23px;
 }
 
 #sliders {
   display: flex;
-  padding-top: 174px;
-  padding-left: 2px;
 }
 
 .slidecontainer {
   transform: rotate(90deg);
-  margin-right: -134px;
+  margin-right: -130px;
 }
 
 .slider {
@@ -60,4 +75,57 @@ body {
   border: 18px solid #000;
   background: #fff;
   cursor: pointer;
+}
+
+#buttons {
+  margin-top: -98px;
+  margin-left: 28px;
+  width: 20%;
+  display: inline-block;
+}
+
+.buttoncontainer {
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+}
+
+.buttoncontainer input[type="checkbox"]:checked {
+  background: #f00;
+}
+
+.button {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  border: 18px solid #000;
+  background: #fff;
+  cursor: pointer;
+}
+
+.buttoncontainer i.fa {
+  margin-left: 10px;
+}
+
+#grid-box {
+  max-width: fit-content;
+  margin: auto;
+}
+
+#grid {
+  width: 500px;
+  height: 230px;
+  margin-top: 28px;
+  background: #000;
+  border-radius: 10px;
+  border: 18px solid #000;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-gap: 18px;
+}
+
+#grid .rect {
+  background-color: #fff;
 }

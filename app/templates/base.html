@@ -3,9 +3,10 @@
   <head>
     <meta charset="utf-8">
     <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='font-awesome/css/font-awesome.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300&family=Roboto:wght@100');
+      @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400&family=Audiowide:wght@400&family=Archivo+Black:wght@400');
     </style>
 
     {% block head %}
