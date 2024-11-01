@@ -1,5 +1,3 @@
-from sklearn.model_selection import train_test_split
-
 import copy
 import numpy as np
 import torch
@@ -14,17 +12,6 @@ class Model(nn.Module):
             nn.ReLU(),
             nn.Linear(32, 4),
         )
-        # TODO: Test this? Or Delete?
-        # pyramid
-        # self.layers = nn.Sequential(
-        #     nn.Linear(2, 32),
-        #     nn.ReLU(),
-        #     nn.Linear(32, 16),
-        #     nn.ReLU(),
-        #     nn.Linear(16, 8),
-        #     nn.ReLU(),
-        #     nn.Linear(8, 4),
-        # )
 
     def forward(self, x):
         """
@@ -150,22 +137,21 @@ class XYControl:
         self.log("Training finished")
         self._model_trained = True
 
-    # TODO: Place in audio_utils.py
-    # TODO: Can we replace train_test_split (Would remove scikit-learn dep)?
     def _prepare_data(self):
-        X_train, X_test, y_train, y_test = train_test_split(
-            self._training_data.training_inputs,
-            self._training_data.training_outputs,
-            train_size=0.8,
-            shuffle=True
-        )
-        # Convert to PyTorch tensors
-        return (
-            torch.tensor(X_train, dtype=torch.float32),
-            torch.tensor(X_test, dtype=torch.float32),
-            torch.tensor(y_train, dtype=torch.float32),
-            torch.tensor(y_test, dtype=torch.float32)
-        )
+        X = torch.tensor(self._training_data.training_inputs, dtype=torch.float32)
+        y = torch.tensor(self._training_data.training_outputs, dtype=torch.float32)
+
+        num_samples = X.size(0)
+        indices = torch.randperm(num_samples)
+
+        split_idx = int(num_samples * 0.8)
+        train_indices, test_indices = indices[:split_idx], indices[split_idx:]
+
+        X_train, X_test = X[train_indices], X[test_indices]
+        y_train, y_test = y[train_indices], y[test_indices]
+
+        return X_train, X_test, y_train, y_test
+
     
     def _initialize_training_components(self):
         self._model = Model()
