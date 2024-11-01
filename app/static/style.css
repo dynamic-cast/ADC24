@@ -13,8 +13,8 @@ body {
 }
 
 #contents {
-  max-width: 50%;
   margin: auto;
+  max-width: fit-content;
 }
 
 #controller {
@@ -23,6 +23,22 @@ body {
   border-radius: 10%;
   border: 18px solid #000;
   background: #fff;
+  float: left;
+  margin: 0 50px;
+}
+
+.xy {
+  width: 500px;
+  height: 500px;
+  border-radius: 10%;
+  border: 18px solid #000;
+  background: #fff;
+  display: inline-block;
+  position: relative;
+}
+
+.xy.inactive {
+  display: none;
 }
 
 #controls {
@@ -86,6 +102,29 @@ body {
   align-items: center;
 }
 
+#console {
+  width: 249px;
+  height: 55px;
+  padding: 10px;
+  background-color: #000;
+  margin-left: 4px;
+  color: #fff;
+  /* font-family: 'Cutive Mono', serif; */
+  font-family: "Lucida Console", "Courier New", monospace;
+  font-size: 14px;
+  text-transform: lowercase;
+}
+
+.bottom-row .buttoncontainer,
+.bottom-row #console {
+  display: grid;
+  float: left;
+}
+
+.bottom-row .buttoncontainer {
+  max-width: fit-content;
+}
+
 .buttoncontainer input[type="checkbox"]:checked {
   background: #90EE90;
 }
@@ -103,6 +142,11 @@ body {
 
 .buttoncontainer i.fa {
   margin-left: 10px;
+}
+
+.bottom-row .buttoncontainer i.fa {
+  text-align: center;
+  margin-left: 0px;
 }
 
 #grid-box {
