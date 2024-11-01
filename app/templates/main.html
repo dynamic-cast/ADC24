@@ -4,4 +4,83 @@
 {% endblock %}
 
 {% block content %}
+<div>
+<input type="checkbox" id="playing" /><label for="playing">Playing</label>
+</div>
+
+<div>
+<input type="checkbox" id="looping" /><label for="looping">Looping</label>
+</div>
+
+<div>
+<input type="checkbox" id="transform" /><label for="transform">Style Transfer</label>
+</div>
+
+<div>
+  <input type="range" id="dim1" name="dim1" min="-5" max="5" step="0.05"/>
+  <label for="dim1">Dimension 1</label>
+</div>
+
+<div>
+  <input type="range" id="dim2" name="dim2" min="-5" max="5" step="0.05"/>
+  <label for="dim2">Dimension 2</label>
+</div>
+
+<div>
+  <input type="range" id="dim3" name="dim3" min="-5" max="5" step="0.05"/>
+  <label for="dim3">Dimension 3</label>
+</div>
+
+<div>
+  <input type="range" id="dim4" name="dim4" min="-5" max="5" step="0.05"/>
+  <label for="dim4">Dimension 4</label>
+</div>
+{% endblock %}
+
+{% block bottom %}
+<script>
+  const dims_socket = new WebSocket('ws://' + location.host + '/dims');
+
+  const dim1 = document.querySelector("#dim1");
+  const dim2 = document.querySelector("#dim2");
+  const dim3 = document.querySelector("#dim3");
+  const dim4 = document.querySelector("#dim4");
+
+  dim1.addEventListener("input", (event) => {
+    dims_socket.send([event.target.value, dim2.value, dim3.value, dim4.value]);
+  });
+
+  dim2.addEventListener("input", (event) => {
+    dims_socket.send([dim1.value, event.target.value, dim3.value, dim4.value]);
+  });
+
+  dim3.addEventListener("input", (event) => {
+    dims_socket.send([dim1.value, dim2.value, event.target.value, dim4.value]);
+  });
+
+  dim4.addEventListener("input", (event) => {
+    dims_socket.send([dim1.value, dim2.value, dim3.value, event.target.value]);
+  });
+
+  const toggle_socket = new WebSocket('ws://' + location.host + '/toggle');
+
+  const playing = document.querySelector("#playing");
+  const looping = document.querySelector("#looping");
+  const transform = document.querySelector("#transform");
+
+  playing.addEventListener("input", (event) => {
+    const checked = playing.checked ? "on" : "off";
+    toggle_socket.send("playing, " + checked);
+  });
+
+  looping.addEventListener("input", (event) => {
+    const checked = looping.checked ? "on" : "off";
+    toggle_socket.send("looping, " + checked);
+  });
+
+  transform.addEventListener("input", (event) => {
+    const checked = transform.checked ? "on" : "off";
+    toggle_socket.send("transform, " + checked);
+  });
+</script>
 {% endblock %}

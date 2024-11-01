@@ -9,8 +9,18 @@ from .audio_utils import read_audio_sample
 from .player import Player
 from .rave import load_model
 
+class NotifyingEvent(Event):
+    def __init__(self, callback, *a, **k):
+        super().__init__(*a, **k)
+        self._callback = callback
+
+    def set(self, *a, **k):
+        super().set(*a, **k)
+        self._callback()
+
 class AudioEngine(Thread):
 
+    # def __init__(self, input_wav, model_path, latent_coordinates, *a, **k):
     def __init__(self, input_wav, model_path, *a, **k):
         super().__init__(*a, **k)
 
@@ -31,46 +41,75 @@ class AudioEngine(Thread):
         )
 
         self._max_position = len(sample.data) - 1
-        self._current_position = 0.0
+        self._current_position = 0
 
-        # self._zeros = np.zeros(self._buffer_size, dtype=self._data_type)
+        self._zeros = np.zeros(self._buffer_size, dtype=self._data_type)
 
         self._rave_model = load_model(model_path)
         if sample.sampling_rate != self._rave_model.sampling_rate:
             print(f"sampling rates differ")
             # TODO: resample the input sample
 
-        self.stop = Event()
+        self._latent_coordinates = torch.zeros(self._rave_model.num_latent_dimensions)
+        # self._latent_coordinates = latent_coordinates
+
+        self.loop = Event()
+        self.transform = Event()
+        self.stop = NotifyingEvent(self._reset_engine_state)
+
+    def _reset_engine_state(self):
+        self._current_position = 0
+        # self._latent_coordinates = torch.zeros(self._rave_model.num_latent_dimensions)
 
     def _apply_transformation(self, buffer):
         torch.set_grad_enabled(False)
         input_data = torch.Tensor(buffer)
         input_data = torch.reshape(input_data, (1, 1, buffer.size))
         encoded = self._rave_model.encode(input_data)
+        encoded[0][:,0] += self._latent_coordinates
         decoded = self._rave_model.decode(encoded)
         return decoded[0][0][:buffer.size].numpy()
 
     def _generate_next_sample_buffer(self):
-        # TODO: Add looping
         data = self._sample.data
         for _ in range(self._buffer_size):
             position = self._current_position
             if position < self._max_position:
-                yield data[int(position)]
-                self._current_position += 1.0
+                yield data[position]
+                self._current_position += 1
             else:
                 yield 0
 
+    def _generate_next_sample_buffer_looping(self):
+        data = self._sample.data
+        for _ in range(self._buffer_size):
+            position = self._current_position % self._max_position
+            yield data[position]
+            self._current_position = position + 1
+
     def _generate_next_buffer(self):
+        if self.stop.is_set():
+            return self._zeros
+
         sample_buffer = np.fromiter(
-            self._generate_next_sample_buffer(),
+            self._generate_next_sample_buffer_looping()
+                if self.loop.is_set()
+                else self._generate_next_sample_buffer(),
             dtype=float,
             count=self._buffer_size,
         )
-        sample_buffer = self._apply_transformation(sample_buffer)
+        if self.transform.is_set():
+            sample_buffer = self._apply_transformation(sample_buffer)
         return sample_buffer.astype(self._data_type)
+
+    def set_latent_coordinates(self, coordinates):
+        num_dimensions = len(self._latent_coordinates)
+        num_coordinates = len(coordinates)
+        if num_coordinates > num_dimensions:
+            coordinates = coordinates[:num_dimensions]
+        self._latent_coordinates[:num_coordinates] = torch.Tensor(coordinates)
 
     def run(self):
         with self._player.stream_audio():
-            while not self.stop.is_set():
+            while True:
                 time.sleep(0.1)
