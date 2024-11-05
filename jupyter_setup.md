@@ -1,5 +1,5 @@
 # Setting up the Playground
-Get comfty on your command line for this set up. 
+Get comfty on your command line for this set up. You might be able to run the following lines from your IDE directly if it renders .md files and supports runing bash prompts from them. You can use your IDE terminal, Terminal on MacOs or Linux, or Command Prompt on Windows.
 
 ## Get our code from github
 Use your favourite git client to clone our workshop [repo](https://github.com/dynamic-cast/ADC24).
@@ -8,28 +8,51 @@ This will include the example app and complete workshop.
 git clone git@github.com:dynamic-cast/ADC24.git
 ```
 
-For the first part of the workshop, please checkout our branch
+For the first part of the workshop, please check out our branch
 ```bash
 git checkout workshop/part-1-embed-model
 ```
 
 ## Setting up a local environment
-We don't want to mess with your favourite personal python set up, so we'll create a local environment and activate it. On a Mac or Linux you can run:
+For this project, you'll need a python version between 3.8. and 3.12 (numpy does not support 3.13) Check your version with:
+
+```bash
+python --version
+```
+
+please follow [this guide](https://www.pythoncentral.io/how-to-update-python/) if you need to update your python version.
+
+We don't want to mess with your favourite personal python set up, so we'll create a local environment and activate it. If you have python 3.13 installed, please specify the version below by replacing `python3` with e.g. `python3.12`. On Mac you can run: 
+
 ```bash
 python3 -m venv workshopenv
+```
+```bash
 source workshopenv/bin/activate
+```
+
+On Windows:
+```bash
+python3 -m venv workshopenv
+```
+```bash
+workshopenv\Scripts\activate.bat
 ```
 
 All the modules we need are defined in requirement.txt. You can install them like this after you activated your local environment
 ```bash
-python3 -m pip install requirements.txt
+python3 -m pip install -r requirements.txt
+```
+
+If pip has problems finding the right packages, try to upgrade pip
+```bash
+python3 -m pip install --upgrade pip
 ```
 
 ## Prepare environment for jupyter notebook 
 
 Now we have our environment with all modules. We need to run a couple more commands so we can select this later in jupyter notebook.
 ```bash
-python3 -m pip install ipykernel
 python3 -m ipykernel install --user --name=workshopenv
 ```
 
