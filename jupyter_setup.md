@@ -8,7 +8,7 @@ This will include the example app and complete workshop.
 git clone git@github.com:dynamic-cast/ADC24.git
 ```
 
-For the first part of the workshop, please checkout our branch
+For the first part of the workshop, please check out our branch
 ```bash
 git checkout workshop/part-1-embed-model
 ```
@@ -26,12 +26,16 @@ We don't want to mess with your favourite personal python set up, so we'll creat
 
 ```bash
 python3 -m venv workshopenv
+```
+```bash
 source workshopenv/bin/activate
 ```
 
 On Windows:
 ```bash
 python3 -m venv workshopenv
+```
+```bash
 workshopenv\Scripts\activate.bat
 ```
 
