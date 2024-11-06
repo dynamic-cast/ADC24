@@ -67,7 +67,8 @@ class XYControl:
 
     def log(self, message):
         # logger.info(message)
-        self._send_msg_callback("log", message)
+        if self._send_msg_callback:
+            self._send_msg_callback("log", message)
 
     def set_mode(self, mode):
         self._mode = mode
@@ -76,8 +77,10 @@ class XYControl:
 
     def receive_coordinates(self, mouse_xy, latent_coordinates):
         if self._mode == Mode.data_gathering:
+            self.log(f"Adding data point: {mouse_xy} -> {latent_coordinates}")
             self._training_data.add_data_point(mouse_xy, latent_coordinates)
         if self._mode == Mode.control and self._model_trained:
+            self.log(f"Passing data: {mouse_xy}")
             self.generate_latent_coordinates(mouse_xy)
 
     def _toggle_mode(self, active_mode, value):
@@ -153,7 +156,7 @@ class XYControl:
             latent_coordinates = point["latent_coordinates"]
             self._training_data.add_data_point(mouse_xy, latent_coordinates)
 
-
+        self.log("Training data loaded from file")
 
     def _prepare_data(self):
         X = torch.tensor(self._training_data.training_inputs, dtype=torch.float32)
@@ -215,3 +218,5 @@ class XYControl:
             x = torch.tensor(mouse_xy, dtype=torch.float32)
             y_pred = self._model(x)
             self._set_controls_callback(y_pred)
+            if self._send_msg_callback:
+                self._send_msg_callback("set_dims", {"dims": [float(v) for v in y_pred]})
