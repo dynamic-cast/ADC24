@@ -114,10 +114,10 @@ class XYControl:
         self.log("Training started")
 
         # Prepare data
-        X_train, X_test, y_train, y_test = self._prepare_data()
+        X_train, X_test, y_train, y_test = self.prepare_data()
 
         # Initialize model, loss function, and optimizer
-        self._initialize_training_components()
+        self.initialize_training_components()
 
         # Hold the best model
         best_mse = np.inf # init to infinity
@@ -125,10 +125,10 @@ class XYControl:
 
         # Training loop
         for epoch in range(self.n_epochs): # n_epochs = 100
-            running_loss = self._train_one_epoch(X_train, y_train)
+            running_loss = self.train_one_epoch(X_train, y_train)
 
             # evaluate accuracy at end of each epoch
-            mse = self._validate(X_test, y_test)
+            mse = self.validate(X_test, y_test)
             history.append(mse)
 
             # Save best model if improved
@@ -158,7 +158,7 @@ class XYControl:
 
         self.log("Training data loaded from file")
 
-    def _prepare_data(self):
+    def prepare_data(self):
         X = torch.tensor(self._training_data.training_inputs, dtype=torch.float32)
         y = torch.tensor(self._training_data.training_outputs, dtype=torch.float32)
 
@@ -174,13 +174,13 @@ class XYControl:
         return X_train, X_test, y_train, y_test
 
     
-    def _initialize_training_components(self):
+    def initialize_training_components(self):
         self.loss_fn = nn.MSELoss()
         self.optimiser = torch.optim.Adam(self._model.parameters(), lr=0.0001)
         self.n_epochs = 100
         self.batch_size = 5
 
-    def _train_one_epoch(self, X_train, y_train):
+    def train_one_epoch(self, X_train, y_train):
         running_loss = 0.0
         batch_start = torch.arange(0, len(X_train), self.batch_size)
         self._model.train()
@@ -205,7 +205,7 @@ class XYControl:
         
         return running_loss / len(batch_start)  # Average loss per batch
     
-    def _validate(self, X_test, y_test):
+    def validate(self, X_test, y_test):
         self._model.eval()
         with torch.no_grad():
             y_pred = self._model(X_test)
