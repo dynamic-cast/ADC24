@@ -194,6 +194,9 @@ class XYControl:
             loss = self.loss_fn(y_pred, y_batch)
             
             # Backward pass and optimization
+            if not loss.requires_grad:
+                loss.requires_grad_(True)
+                
             self.optimiser.zero_grad()
             loss.backward()
             self.optimiser.step()
