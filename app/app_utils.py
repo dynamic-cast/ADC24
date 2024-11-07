@@ -1,5 +1,4 @@
 from app.audio import create_audio_engine
-from app.control.xy import XYControl, Model
 
 import os
 
@@ -20,8 +19,6 @@ def setup_app(app, socketio):
     audio_engine.stop.set()
     app.audio_engine = audio_engine
     audio_engine.start()
-
-    app.xy_control = XYControl(app.audio_engine.set_latent_coordinates, socketio.emit, Model())
 
 def reset_audio_engine(audio_engine):
     audio_engine.stop.set()
