@@ -30,7 +30,7 @@ class AudioSample(object):
     def __init__(self, fs, channels_no, raw_data, sample_width):
         self._fs = fs
         # self._channels_no = channels_no
-        # TODO: support more channels
+        # Mono only (for now...)
         self._channels_no = 1
 
         # An array with frames of audio sample data.
