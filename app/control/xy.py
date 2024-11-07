@@ -172,7 +172,6 @@ class XYControl:
 
         return X_train, X_test, y_train, y_test
 
-    
     def initialize_training_components(self):
         self.loss_fn = nn.MSELoss()
         self.optimiser = torch.optim.Adam(self._model.parameters(), lr=0.0001)
@@ -191,26 +190,26 @@ class XYControl:
             # Forward pass
             y_pred = self._model(X_batch)
             loss = self.loss_fn(y_pred, y_batch)
-            
+
             # Backward pass and optimization
             if not loss.requires_grad:
                 loss.requires_grad_(True)
-                
+
             self.optimiser.zero_grad()
             loss.backward()
             self.optimiser.step()
 
             running_loss += loss.item()
-        
+
         return running_loss / len(batch_start)  # Average loss per batch
-    
+
     def validate(self, X_test, y_test):
         self._model.eval()
         with torch.no_grad():
             y_pred = self._model(X_test)
             mse = self.loss_fn(y_pred, y_test).item()
         return mse
-    
+
     def prepare_control(self):
         self._model.load_state_dict(self._model_weights)
         self._model.eval()

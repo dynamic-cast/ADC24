@@ -21,7 +21,11 @@ def setup_app(app, socketio):
     app.audio_engine = audio_engine
     audio_engine.start()
 
-    app.xy_control = XYControl(app.audio_engine.set_latent_coordinates, socketio.emit, Model())
+    app.xy_control = XYControl(
+        app.audio_engine.set_latent_coordinates,
+        socketio.emit,
+        Model(),
+    )
 
 def reset_audio_engine(audio_engine):
     audio_engine.stop.set()
