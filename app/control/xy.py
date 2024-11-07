@@ -66,7 +66,6 @@ class XYControl:
         self._model_trained = False
 
     def log(self, message):
-        # logger.info(message)
         if self._send_msg_callback:
             self._send_msg_callback("log", message)
 

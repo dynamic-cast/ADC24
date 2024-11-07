@@ -1,5 +1,4 @@
 import sounddevice
-import numpy as np
 
 class Player(object):
     def __init__(
@@ -21,7 +20,7 @@ class Player(object):
     def stream_audio(self):
         def callback(outdata, frames, time, status):
             data = self._generate_data()
-            if data.ndim < 2: # bodge?
+            if data.ndim < 2:
                 data = data.reshape(-1, 1)
             outdata[:] = data
 
