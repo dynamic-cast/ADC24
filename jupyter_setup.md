@@ -77,7 +77,7 @@ To select our workshop environment in jupyter notebook you can follow these step
 
 ## Downloading the RAVE models
 You can use the line from the notebook to download the model, if you're on mac and haven't downloaded files from python before you might need to follow the step below.
-If you prefer you can download the models manually [here](https://acids-ircam.github.io/rave_models_download) and pass the path to the file when creating the audio engine.   
+If you prefer you can download the models manually [here](https://acids-ircam.github.io/rave_models_download) and pass the path to the file when creating the audio engine. We recommend puttingit in the ADC24 folder root.  
 
 ### Mac Users
 #### Install certificates so you can download the model file
@@ -85,4 +85,16 @@ Use the Spotlight search to find the file that executes the command. You can pre
 ![Install the certificate](jupyter_setup_resources/install_certificates.jpg)
 You can double click on the entry, this will open a terminal and install the certificate needed to verify HTTPS connections.
 
+If you do this, you'll need to restart the jupyter kernel. If you still have troubles, please try to download the file and put it in the ADC24 folder.
+
 Now you can execute the lines in the notebook and make some noise, yay.
+
+# Trouble Shooting
+![NetworkError](jupyter_setup_resources/network_error.jpg)
+Looks like you're jupyter notebook server terminated. Just rerun:
+```bash
+jupyter notebook
+```
+
+![Model missing](jupyter_setup_resources/model_missing.jpg)
+Looks like the audio engine can't find the model file. Please make sure the .ts model file matches the path passed in the notebook. If you don't have the file, please follow the instructions to download the models manually.
