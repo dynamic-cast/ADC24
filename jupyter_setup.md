@@ -10,7 +10,7 @@ git clone git@github.com:dynamic-cast/ADC24.git
 
 For the first part of the workshop, please check out our branch
 ```bash
-git checkout workshop/part-1-embed-model
+git checkout part-1
 ```
 
 ## Setting up a local environment
