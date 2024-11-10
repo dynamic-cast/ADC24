@@ -15,16 +15,6 @@ class UnsupportedSampleWidth(Exception):
     def __str__(self):
         return "Can't read the sample because of unsupported sample width"
 
-def get_dtype_from_width(width):
-    if width == 1:
-        return np.uint8
-    elif width == 2:
-        return np.int16
-    elif width == 4:
-        return np.float32
-    else:
-        raise UnsupportedSampleWidth()
-
 class AudioSample(object):
     """A read-only container for audio sample data"""
     def __init__(self, fs, channels_no, raw_data, sample_width):

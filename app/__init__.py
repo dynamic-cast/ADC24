@@ -1,5 +1,5 @@
-from flask import Flask, current_app, g, render_template
-from flask_socketio import SocketIO, emit
+from flask import Flask, current_app, render_template
+from flask_socketio import SocketIO
 
 from .app_utils import reset_audio_engine, setup_app
 
@@ -48,9 +48,6 @@ def handle_toggle(json):
         current_app.xy_control.toggle_training(val)
     elif name == "controlling":
         current_app.xy_control.toggle_control(val)
-
-if __name__ == '__main__':
-    socketio.run(app)
 
 if __name__ == '__main__':
     socketio.run(app)
