@@ -40,6 +40,8 @@ class AudioEngine(Thread):
             buffer_size=self._buffer_size,
         )
 
+        self._keep_alive = True
+
         self._max_position = len(sample.data) - 1
         self._current_position = 0
 
@@ -57,6 +59,7 @@ class AudioEngine(Thread):
         self.loop = Event()
         self.transform = Event()
         self.stop = NotifyingEvent(self._reset_engine_state)
+        self.shutdown = NotifyingEvent(self._stop_engine)
 
     def _rave_warmup(self):
         for _ in range(4):
@@ -65,6 +68,9 @@ class AudioEngine(Thread):
     def _reset_engine_state(self):
         self._current_position = 0
         # self._latent_coordinates = torch.zeros(self._rave_model.num_latent_dimensions)
+
+    def _stop_engine(self):
+        self._keep_alive = False
 
     def _apply_transformation(self, buffer):
         torch.set_grad_enabled(False)
@@ -121,5 +127,5 @@ class AudioEngine(Thread):
 
     def run(self):
         with self._player.stream_audio():
-            while True:
+            while self._keep_alive:
                 time.sleep(0.1)
