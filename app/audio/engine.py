@@ -20,7 +20,6 @@ class NotifyingEvent(Event):
 
 class AudioEngine(Thread):
 
-    # def __init__(self, input_wav, model_path, latent_coordinates, *a, **k):
     def __init__(self, input_wav, model_path, *a, **k):
         super().__init__(*a, **k)
 
@@ -53,7 +52,6 @@ class AudioEngine(Thread):
             # TODO: resample the input sample
 
         self._latent_coordinates = torch.zeros(self._rave_model.num_latent_dimensions)
-        # self._latent_coordinates = latent_coordinates
         self._rave_warmup()
 
         self.loop = Event()
@@ -67,7 +65,6 @@ class AudioEngine(Thread):
 
     def _reset_engine_state(self):
         self._current_position = 0
-        # self._latent_coordinates = torch.zeros(self._rave_model.num_latent_dimensions)
 
     def _stop_engine(self):
         self._keep_alive = False
@@ -117,7 +114,7 @@ class AudioEngine(Thread):
     def latent_coordinates(self):
         return self._latent_coordinates
 
-    # TODO: make thread safe (use Python Queue?)
+    # TODO: use a synchronised queue
     def set_latent_coordinates(self, coordinates):
         num_dimensions = len(self._latent_coordinates)
         num_coordinates = len(coordinates)

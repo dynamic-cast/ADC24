@@ -10,12 +10,9 @@ def setup_app(app, socketio):
     except OSError:
         pass
 
-    # BODGE!
-    # app.latent_coordinates = Queue(maxsize=1)
     audio_engine = create_audio_engine(
         app.config['INPUT_WAV'],
         app.config['MODEL'],
-        # app.latent_coordinates,
     )
     audio_engine.stop.set()
     app.audio_engine = audio_engine
